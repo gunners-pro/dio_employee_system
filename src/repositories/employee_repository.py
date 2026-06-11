@@ -1,4 +1,4 @@
-from src.schemas.schemas import Employee
+from src.schemas.employee_schema import Employee
 from typing import List, Optional
 
 class EmployeeRepository:

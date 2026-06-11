@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import APIRouter
 
-from src.schemas.schemas import Employee
+from src.schemas.employee_schema import Employee
 from src.repositories.employee_repository import EmployeeRepository
 
 employee_router = APIRouter()

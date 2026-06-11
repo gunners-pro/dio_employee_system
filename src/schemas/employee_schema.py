@@ -14,15 +14,28 @@ class Employee(BaseModel):
     dataAdmissao: datetime = Field(...)
 
     @model_validator(mode='before')
+    @classmethod
     def validate_employee(cls, values):
-        if not values['nome'].strip():
+        if isinstance(values, dict):
+            nome = values.get('nome', '')
+            endereco = values.get('endereco', '')
+            ramal = values.get('ramal', '')
+            departamento = values.get('departamento', '')
+        else:
+            nome = getattr(values, 'nome', '')
+            endereco = getattr(values, 'endereco', '')
+            ramal = getattr(values, 'ramal', '')
+            departamento = getattr(values, 'departamento', '')
+
+        if not nome.strip():
             raise ValueError("Nome cannot be empty or contain only whitespace")
-        if not values['endereco'].strip():
+        if not endereco.strip():
             raise ValueError("Endereço cannot be empty or contain only whitespace")
-        if not values['ramal'].strip():
+        if not ramal.strip():
             raise ValueError("Ramal cannot be empty or contain only whitespace")
-        if not values['departamento'].strip():
+        if not departamento.strip():
             raise ValueError("Departamento cannot be empty or contain only whitespace")
+
         return values
 
     model_config = ConfigDict(validate_by_name=True)

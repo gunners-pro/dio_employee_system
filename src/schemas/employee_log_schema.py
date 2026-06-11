@@ -1,10 +1,16 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field, model_validator, ConfigDict
 
+class TipoAcao(str, Enum):
+    CREATE = "Create"
+    UPDATE = "Update"
+    DELETE = "Delete"
+
 class EmployeeLog(BaseModel):
-    TipoAcao: str = Field(..., min_length=1, max_length=20)
+    TipoAcao: TipoAcao = Field(..., description="Tipo de ação ao modificar o employee")
     PartitionKey: str = Field(..., min_length=1, max_length=50)
     rowkey: Optional[UUID] = Field(default_factory=uuid4, description="Unique identifier for the log entry")
     timestamp: datetime = Field(..., default_factory=datetime.now)

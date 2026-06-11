@@ -1,21 +1,37 @@
-from src.schemas.employee_schema import Employee
 from typing import List, Optional
+from sqlalchemy.orm import Session
+
+from src.schemas.employee_schema import Employee
 
 class EmployeeRepository:
     def __init__(self):
-        self._employees: List[Employee] = []
+        pass
 
-    def get_by_id(self, id: str) -> Optional[Employee]:
-        for emp in self._employees:
-            if emp.id == id:
-                return emp
-        return None
+    def get_by_id(self, id: str, db: Session) -> Optional[Employee]:
+        return db.query(Employee).filter(Employee.id == id).first()
     
-    def add(self, employee: Employee):
-        self._employees.append(employee)
+    def add(self, employee: Employee, db: Session):
+        db.add(employee)
+        db.commit()
+        db.refresh(employee)
+        return employee
+    
+    def update(self, employee: Employee, id: str, db: Session):
+        db.query(Employee).filter(Employee.id == id).update({
+            Employee.nome: employee.nome,
+            Employee.endereco: employee.endereco,
+            Employee.ramal: employee.ramal,
+            Employee.emailProfissional: employee.emailProfissional,
+            Employee.departamento: employee.departamento,
+            Employee.salario: employee.salario,
+            Employee.dataAdmissao: employee.dataAdmissao
+        })
+        db.commit()
+        return db.query(Employee).filter(Employee.id == id).first()
 
-    def remove(self, employee: Employee):
-        self._employees.remove(employee)
+    def remove(self, employee: Employee, db: Session):
+        db.delete(employee)
+        db.commit()
 
-    def list_all(self) -> List[Employee]:
-        return self._employees
+    def list_all(self, db: Session) -> List[Employee]:
+        return db.query(Employee).all()

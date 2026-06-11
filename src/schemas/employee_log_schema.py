@@ -2,28 +2,18 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 from uuid import UUID, uuid4
-from pydantic import BaseModel, Field, model_validator, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict
 
 class TipoAcao(str, Enum):
     CREATE = "Create"
     UPDATE = "Update"
     DELETE = "Delete"
+    LIST = "List"
+    READ = "Read"
 
 class EmployeeLog(BaseModel):
-    TipoAcao: TipoAcao = Field(..., description="Tipo de ação ao modificar o employee")
+    tipo_acao: TipoAcao = Field(..., description="Tipo de ação ao modificar o employee")
     PartitionKey: str = Field(..., min_length=1, max_length=50)
-    rowkey: Optional[UUID] = Field(default_factory=uuid4, description="Unique identifier for the log entry")
-    timestamp: datetime = Field(..., default_factory=datetime.now)
-    etag: str = Field(..., min_length=1, max_length=100)
-
-    @model_validator(mode='before')
-    def validate_employee_log(cls, values):
-        if not values['TipoAcao'].strip():
-            raise ValueError("TipoAcao cannot be empty or contain only whitespace")
-        if not values['PartitionKey'].strip():
-            raise ValueError("PartitionKey cannot be empty or contain only whitespace")
-        if not values['etag'].strip():
-            raise ValueError("Etag cannot be empty or contain only whitespace")
-        return values
+    RowKey: UUID = Field(default_factory=uuid4, description="Unique identifier for the log entry")
 
     model_config = ConfigDict(validate_by_name=True)

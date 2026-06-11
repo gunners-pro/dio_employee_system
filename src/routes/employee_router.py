@@ -26,6 +26,11 @@ def create_employee(employee: Employee, db: Session = Depends(get_db)):
         salario=employee.salario,
         dataAdmissao=employee.dataAdmissao
     )
+    log_repository.add({
+        "PartitionKey": db_employee.id,
+        "RowKey": str(uuid4()),
+        "tipo_acao": TipoAcao.CREATE.value
+    })
     return employee_repository.add(db_employee, db)
 
 @employee_router.get("/{id}", response_model=Employee)
@@ -33,6 +38,11 @@ def read_employee(id: str, db: Session = Depends(get_db)):
     emp = employee_repository.get_by_id(id, db)
     if not emp:
         raise HTTPException(status_code=404, detail="Employee not found")
+    log_repository.add({
+        "PartitionKey": id,
+        "RowKey": str(uuid4()),
+        "tipo_acao": TipoAcao.READ.value
+    })
     return emp
 
 @employee_router.put("/{id}", response_model=Employee)
@@ -40,6 +50,11 @@ def update_employee(id: str, employee: Employee, db: Session = Depends(get_db)):
     emp = employee_repository.get_by_id(id, db)
     if not emp:
         raise HTTPException(status_code=404, detail="Employee not found")
+    log_repository.add({
+        "PartitionKey": id,
+        "RowKey": str(uuid4()),
+        "tipo_acao": TipoAcao.UPDATE.value
+    })
     return employee_repository.update(id, employee, db)
 
 @employee_router.delete("/{id}", response_model=Employee)
@@ -51,6 +66,11 @@ def delete_employee(id: str, db: Session = Depends(get_db)):
     response = Employee.model_validate(emp)
     
     employee_repository.remove(emp, db)
+    log_repository.add({
+        "PartitionKey": id,
+        "RowKey": str(uuid4()),
+        "tipo_acao": TipoAcao.DELETE.value
+    })
     return response
 
 @employee_router.get("/", response_model=List[Employee])

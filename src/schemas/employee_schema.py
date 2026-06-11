@@ -38,4 +38,4 @@ class Employee(BaseModel):
 
         return values
 
-    model_config = ConfigDict(validate_by_name=True)
+    model_config = ConfigDict(validate_by_name=True, from_attributes=True)

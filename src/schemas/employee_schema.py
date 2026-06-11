@@ -5,11 +5,11 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
 class Employee(BaseModel):
     id: Optional[UUID] = Field(default_factory=uuid4, description="Unique identifier for the employee")
-    nome: str = Field(..., min_length=1, max_length=100)
-    endereco: str = Field(..., min_length=1, max_length=255)
+    nome: str = Field(..., min_length=6, max_length=100)
+    endereco: str = Field(..., min_length=6, max_length=255)
     ramal: str = Field(..., min_length=1, max_length=20)
     emailProfissional: EmailStr
-    departamento: str = Field(..., min_length=1, max_length=50)
+    departamento: str = Field(..., min_length=6, max_length=50)
     salario: float = Field(..., gt=0)
     dataAdmissao: datetime = Field(...)
 
